@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+    <title>21 칩 배틀</title>
+    <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+<div class="app">
+
+    <!-- ROW 1: 좌 조작안내 / 우 플레이어 정보 -->
+    <header class="row row--top">
+        <section class="panel panel--tight" id="panelGuide">
+            <h2>조작 안내</h2>
+            <ul class="guide">
+                <li><b>시작</b>: 칩 1개씩, 아이템 3장씩</li>
+                <li><b>숫자칩 뽑기</b>: 내 턴에 칩 1개 추가</li>
+                <li><b>라운드 종료</b>: 더 뽑지 않고 승부</li>
+                <li><b>21 초과</b>: Bust(자동 패배)</li>
+                <li>CPU가 종료 선언하면 나는 <b>딱 1번만</b> 더 뽑을 수 있음</li>
+            </ul>
+        </section>
+
+        <section class="panel panel--tight" id="panelPlayer">
+            <h2>플레이어 정보</h2>
+
+            <div class="playerBox">
+                <div class="nameRow">
+                    <div class="avatar" aria-hidden="true"></div>
+                    <div class="nameBlock">
+                        <div class="name" id="uiName">-</div>
+                        <div class="small">쿠키 저장됨</div>
+                    </div>
+                    <button id="btnChangeName" class="ghost smallBtn">이름 변경</button>
+                </div>
+
+                <div class="stats">
+                    <div class="stat">
+                        <div class="label">게임판수</div>
+                        <div class="value" id="uiMatches">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="label">승/무/패</div>
+                        <div class="value"><span id="uiW">0</span>/<span id="uiD">0</span>/<span id="uiL">0</span></div>
+                    </div>
+                    <div class="stat">
+                        <div class="label">승률</div>
+                        <div class="value" id="uiWR">0%</div>
+                    </div>
+
+                    <div class="btnRow">
+                        <button id="btnHowTo" class="ghost">게임 설명</button>
+                        <button id="btnItemInfo" class="ghost">아이템 설명</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </header>
+
+    <!-- ROW 2: 중앙 전체 게임 상태 -->
+    <section class="panel" id="panelState" aria-label="게임 상태">
+        <div class="stateLayout">
+            <!-- 왼쪽: 상태 텍스트 -->
+            <div class="stateLeft">
+                <div class="panel__title">게임 상태</div>
+
+                <dl class="stateList">
+                    <div class="rowItem">
+                        <dt>라운드</dt><dd id="uiRound">0</dd>
+                    </div>
+                    <div class="rowItem">
+                        <dt>턴</dt><dd id="uiTurn">Player</dd>
+                    </div>
+                    <div class="rowItem">
+                        <dt>상태</dt><dd id="uiPhase">idle</dd>
+                    </div>
+                    <div class="rowItem">
+                        <dt>덱(칩)</dt><dd id="uiChipLeft">0장</dd>
+                    </div>
+                    <div class="rowItem">
+                        <dt>덱(아이템)</dt><dd id="uiItemLeft">0장</dd>
+                    </div>
+                </dl>
+
+                <div class="stateHint" id="uiHint">시작을 눌러 게임을 시작하세요.</div>
+            </div>
+
+            <!-- 오른쪽: 버튼 -->
+            <div class="stateRight">
+                <div class="topBtns">
+                    <button id="btnStart" class="btnPill btnPill--yellow" type="button">시작</button>
+                    <button id="btnReset" class="btnPill" type="button">리셋</button>
+                </div>
+
+                <div class="bigBtns">
+                    <button id="btnDrawChip" class="btnBig" type="button">숫자칩 뽑기</button>
+                    <button id="btnStand" class="btnBig btnBig--ghost" type="button">라운드 종료</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ROW 3: 하단 좌 CPU / 우 Player -->
+    <main class="row row--bottom">
+        <section class="panel" id="panelCPU">
+            <div class="zoneHead">
+                <h2>CPU</h2>
+                <div class="life">
+                    <!--<span class="tag">목숨</span>-->
+                    <span id="uiCpuLife" class="hearts">♥♥♥♥♥</span>
+                </div>
+            </div>
+
+            <div class="subhead">숫자칩</div>
+            <div class="chips" id="cpuChips"></div>
+
+            <div class="sumRow">
+                <span class="sumLabel">합계</span>
+                <span class="sumValue" id="uiCpuSum">-</span>
+            </div>
+
+            <div class="subhead">아이템(비공개)</div>
+            <div class="items" id="cpuItems"></div>
+            <div class="small" id="uiCpuFlags"></div>
+        </section>
+
+        <section class="panel" id="panelPlayerZone">
+            <div class="zoneHead">
+                <h2>Player</h2>
+                <div class="life">
+                    <!--<span class="tag">목숨</span>-->
+                    <span id="uiPlayerLife" class="hearts">♥♥♥♥♥</span>
+                </div>
+            </div>
+
+            <div class="subhead">숫자칩(항상 공개)</div>
+            <div class="chips" id="playerChips"></div>
+
+            <div class="sumRow">
+                <span class="sumLabel">내 합계</span>
+                <span class="sumValue" id="uiPlayerSum">0</span>
+            </div>
+
+            <div class="subhead">아이템(클릭 사용)</div>
+            <div class="items" id="playerItems"></div>
+            <div class="small" id="uiPlayerFlags"></div>
+        </section>
+    </main>
+
+    <!-- 모달: 이름 입력 -->
+    <div class="modal" id="nameModal" aria-hidden="true">
+        <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="nameTitle">
+            <h3 id="nameTitle">플레이어 이름 입력</h3>
+            <p class="small">이름은 <b>영어로만</b> 입력해 주세요. (예: rosie, jungkyo)</p>
+
+            <label class="field">
+                <span>이름 (A~Z, a~z, 숫자/공백 불가)</span>
+                <input id="nameInput" type="text" maxlength="12" placeholder="ex) rosie92 (숫자 불가)" />
+            </label>
+
+            <div class="modalActions">
+                <button id="btnSaveName" class="primary">저장</button>
+                <button id="btnCancelName" class="ghost">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 모달: 아이템 선택 -->
+    <div class="modal" id="actionModal" aria-hidden="true">
+        <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="actionTitle">
+            <h3 id="actionTitle">아이템 사용</h3>
+            <p class="small" id="actionDesc">선택하세요.</p>
+            <div class="choiceGrid" id="actionChoices"></div>
+            <div class="modalActions">
+                <button id="btnActionCancel" class="ghost">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 모달: 알림/설명 공용 -->
+    <div class="modal" id="alertModal" aria-hidden="true">
+        <div class="modalCard" role="dialog" aria-modal="true" aria-labelledby="alertTitle">
+            <h3 id="alertTitle">알림</h3>
+            <p class="small" id="alertMsg">-</p>
+            <div class="modalActions">
+                <button id="btnAlertOk" class="primary">확인</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="./main.js"></script>
+</body>
+</html>
