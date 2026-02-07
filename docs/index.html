@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
-    <title>21 칩 배틀</title>
+    <title>21orBust</title>
     <link rel="stylesheet" href="./style.css" />
 </head>
 <body>
@@ -81,6 +81,9 @@
                     <div class="rowItem">
                         <dt>덱(아이템)</dt><dd id="uiItemLeft">0장</dd>
                     </div>
+                    <div class="rowItem">
+                        <dt>버림더미(아이템)</dt><dd id="uiItemDiscard">0장</dd>
+                    </div>
                 </dl>
 
                 <div class="stateHint" id="uiHint">시작을 눌러 게임을 시작하세요.</div>
@@ -102,7 +105,7 @@
     </section>
 
     <!-- ROW 3: 하단 좌 CPU / 우 Player -->
-    <main class="row row--bottom">
+    <main class="row row--bottom" style="height: 315px;">
         <section class="panel" id="panelCPU">
             <div class="zoneHead">
                 <h2>CPU</h2>
