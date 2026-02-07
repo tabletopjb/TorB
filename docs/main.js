@@ -761,8 +761,8 @@ async function nextRound(){
   state.chipDeck = shuffle(buildChipDeck());
 
   // 라운드 시작마다 아이템 1장씩
-  const pAdd = dealItemTo("player", 2);
-  const cAdd = dealItemTo("cpu", 4); // ✅ 2 + 2
+  const pAdd = dealItemTo("player", 1);
+  const cAdd = dealItemTo("cpu", 3); // ✅ 1 + 2
 
   // 라운드 시작: 칩 1개씩
   dealChipTo("player");
@@ -1043,8 +1043,43 @@ async function cpuTakeTurn(){
 /* ===== 버튼 ===== */
 ui.btnStart.addEventListener("click", startGame);
 
-ui.btnReset.addEventListener("click", () => {
-  resetAll();
+ui.btnReset.addEventListener("click", async () => {
+  // 게임 중이든 아니든, 리셋은 "패배"로 기록
+  // 단, 아직 이름이 없으면(초기) 기록하지 않고 그냥 리셋만
+  if (!state.playerName) {
+    resetAll();
+    return;
+  }
+
+  const inProgress = (state.phase !== "idle");
+  if (!inProgress) {
+    resetAll();
+  return; }
+
+  // 확인 팝업: 실행/취소 버튼 제공
+  openActionModal(
+    "리셋 확인",
+    "리셋은 패배로 기록됩니다.",
+    [
+      { label: "실행", value: "go" },
+      { label: "취소", value: "cancel" }
+    ],
+    async (v) => {
+      if (v !== "go") return;
+
+      // ✅ 패배 기록 처리
+      state.matches += 1;
+      state.l += 1;
+      saveRecord();
+
+      // ✅ 게임 상태도 '패배한 것처럼' 마무리 문구(선택)
+      await showAlert("리셋 완료", "패배로 기록되었습니다.");
+
+      // ✅ 리셋
+      resetAll();
+      render();
+    }
+  );
 });
 
 ui.btnDrawChip.addEventListener("click", async () => {
