@@ -47,9 +47,9 @@ body{
   box-shadow: 0 18px 50px rgba(0,0,0,.25);
   min-height:0;
   overflow:auto;
-  height: 25vh;
+
 }
-.panel--tight{ padding:8px; }
+.panel--tight{ padding:5px; }
 
 h2{
   margin:0 0 8px;
@@ -434,7 +434,7 @@ input:focus{border-color: rgba(250,204,21,.40); box-shadow: 0 0 0 6px rgba(250,2
 }
 
 .stateHint{
-  margin-top:auto;
+  /*margin-top:auto;*/
   font-size:11px;
   color: rgba(233,238,246,.70);
   padding-top:8px;
